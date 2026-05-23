@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CaseRow } from "@/components/case-row"
+import { RefreshGuideButton } from "@/components/refresh-guide-button"
 import { supabase } from "@/lib/supabase"
 import type { Tool, Case } from "@/lib/supabase"
 import { formatDistanceToNow } from "@/lib/date"
@@ -52,15 +53,18 @@ export default async function ToolPage({
             </p>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {tool.last_scraped_at && (
-            <span className="text-xs text-muted-foreground">
-              Оновлено {formatDistanceToNow(tool.last_scraped_at)}
-            </span>
-          )}
-          <Button asChild size="sm" variant="outline">
-            <Link href={`/cases/new?tool=${tool.id}`}>+ Кейс</Link>
-          </Button>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            {tool.last_scraped_at && (
+              <span className="text-xs text-muted-foreground">
+                Оновлено {formatDistanceToNow(tool.last_scraped_at)}
+              </span>
+            )}
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/cases/new?tool=${tool.id}`}>+ Кейс</Link>
+            </Button>
+          </div>
+          <RefreshGuideButton slug={tool.slug} />
         </div>
       </div>
 
@@ -73,10 +77,10 @@ export default async function ToolPage({
         </div>
       ) : (
         <div className="mb-10 rounded-md border border-dashed border-border p-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            Гайд ще не заповнений. Він з&apos;явиться після першого
-            автоматичного оновлення.
+          <p className="mb-3 text-sm text-muted-foreground">
+            Гайд ще не заповнений.
           </p>
+          <RefreshGuideButton slug={tool.slug} />
         </div>
       )}
 
