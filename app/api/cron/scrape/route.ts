@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { supabase } from "@/lib/supabase"
 import { scrapeUrl } from "@/lib/scraper"
-import { anthropic, MODEL } from "@/lib/anthropic"
+import { getAnthropic, MODEL } from "@/lib/anthropic"
 import { sendSlackNotification } from "@/lib/slack"
 import type { Tool } from "@/lib/supabase"
 
@@ -44,7 +44,7 @@ export async function GET() {
         continue
       }
 
-      const diffMessage = await anthropic.messages.create({
+      const diffMessage = await getAnthropic().messages.create({
         model: MODEL,
         max_tokens: 400,
         messages: [

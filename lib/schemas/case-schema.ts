@@ -11,6 +11,7 @@ export const CaseSchema = z.object({
   time_spent_min: z.coerce.number().int().min(0).optional(),
   time_without_ai_min: z.coerce.number().int().min(0).optional(),
   source: z.enum(["web", "extension"]).default("web"),
+  photos: z.array(z.string().url()).max(10).default([]),
 })
 
 export type CaseInput = z.infer<typeof CaseSchema>

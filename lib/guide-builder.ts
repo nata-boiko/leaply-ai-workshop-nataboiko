@@ -1,6 +1,6 @@
 import { discoverToolUrls, filterGuideUrls } from "./discovery"
 import { scrapeUrl } from "./scraper"
-import { anthropic, MODEL } from "./anthropic"
+import { getAnthropic, MODEL } from "./anthropic"
 
 const MAX_URLS = 12
 const MAX_CONTENT_PER_URL = 3000
@@ -71,7 +71,7 @@ export async function buildGuide(
   const context = contextParts.join("\n\n---\n\n")
 
   // 5. Claude synthesizes the guide
-  const message = await anthropic.messages.create({
+  const message = await getAnthropic().messages.create({
     model: MODEL,
     max_tokens: 2048,
     messages: [

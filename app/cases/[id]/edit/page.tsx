@@ -1,28 +1,23 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useEffect, Suspense } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import type { Tool } from "@/lib/supabase"
 import { PhotoUploader } from "@/components/photo-uploader"
+import type { Case, Tool } from "@/lib/supabase"
 
-function NewCaseForm() {
+export default function EditCasePage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const defaultToolId = searchParams.get("tool") ?? ""
+  const { id } = useParams<{ id: string }>()
 
-  const [tools, setTools] = useState<Tool[]>([])
-  const [toolId, setToolId] = useState(defaultToolId)
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
+  const [error, setError] = useState("")
+  const [uploading, setUploading] = useState(false)
+
   const [taskName, setTaskName] = useState("")
   const [taskDetails, setTaskDetails] = useState("")
   const [approach, setApproach] = useState("")
@@ -32,112 +27,112 @@ function NewCaseForm() {
   const [timeSpent, setTimeSpent] = useState("")
   const [timeWithout, setTimeWithout] = useState("")
   const [photos, setPhotos] = useState<string[]>([])
-  const [uploading, setUploading] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [toolName, setToolName] = useState("")
 
   useEffect(() => {
-    fetch("/api/tools")
+    fetch(`/api/cases`)
       .then((r) => r.json())
-      .then((d: Tool[]) => setTools(d))
-      .catch(() => setError("Не вдалося завантажити інструменти"))
-  }, [])
+      .then((cases: (Case & { tool: Tool })[]) => {
+        const c = cases.find((c) => c.id === id)
+        if (!c) return
+        setTaskName(c.task_name)
+        setTaskDetails(c.task_details ?? "")
+        setApproach(c.approach ?? "")
+        setIterations(c.iterations != null ? String(c.iterations) : "")
+        setOutcome(c.outcome ?? "")
+        setSuccess(c.success)
+        setTimeSpent(c.time_spent_min != null ? String(c.time_spent_min) : "")
+        setTimeWithout(
+          c.time_without_ai_min != null ? String(c.time_without_ai_min) : ""
+        )
+        setPhotos(c.photos ?? [])
+        setToolName(c.tool?.name ?? "")
+      })
+      .finally(() => setFetching(false))
+  }, [id])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
-    if (!toolId) {
-      setError("Оберіть інструмент")
-      return
-    }
-    if (!taskName.trim()) {
-      setError("Введіть назву задачі")
-      return
-    }
-
     setLoading(true)
     try {
-      const res = await fetch("/api/cases", {
-        method: "POST",
+      const res = await fetch(`/api/cases/${id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tool_id: toolId,
           task_name: taskName,
           task_details: taskDetails || undefined,
           approach: approach || undefined,
-          iterations: iterations ? Number(iterations) : undefined,
+          iterations: iterations ? Number(iterations) : null,
           outcome: outcome || undefined,
           success,
-          time_spent_min: timeSpent ? Number(timeSpent) : undefined,
-          time_without_ai_min: timeWithout ? Number(timeWithout) : undefined,
-          source: "web",
+          time_spent_min: timeSpent ? Number(timeSpent) : null,
+          time_without_ai_min: timeWithout ? Number(timeWithout) : null,
           photos,
         }),
       })
-
       if (!res.ok) {
         const err = (await res.json()) as { error: string }
-        throw new Error(err.error ?? "Помилка при збереженні")
+        throw new Error(err.error)
       }
-
-      router.push("/cases")
+      router.push(`/cases/${id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Невідома помилка")
+      setError(err instanceof Error ? err.message : "Помилка")
     } finally {
       setLoading(false)
     }
   }
 
+  if (fetching)
+    return (
+      <div className="p-8 text-sm text-muted-foreground">Завантаження...</div>
+    )
+
   return (
-    <div className="max-w-lg">
+    <div className="max-w-xl">
+      <div className="mb-8">
+        <button
+          onClick={() => router.push(`/cases/${id}`)}
+          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← Назад
+        </button>
+      </div>
+
       <div className="mb-6">
-        <h1 className="text-base font-semibold">Новий кейс</h1>
+        <h1 className="text-base font-semibold">Редагувати кейс</h1>
+        {toolName && (
+          <p className="mt-0.5 text-sm text-muted-foreground">{toolName}</p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-xs">Інструмент</Label>
-            <Select value={toolId} onValueChange={setToolId}>
-              <SelectTrigger className="text-sm">
-                <SelectValue placeholder="Оберіть..." />
-              </SelectTrigger>
-              <SelectContent>
-                {tools.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-xs">Результат</Label>
-            <div className="flex gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => setSuccess(true)}
-                className={`flex-1 rounded-md border py-2 text-xs transition-colors ${
-                  success
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted-foreground hover:border-foreground/30"
-                }`}
-              >
-                ✓ Успішний
-              </button>
-              <button
-                type="button"
-                onClick={() => setSuccess(false)}
-                className={`flex-1 rounded-md border py-2 text-xs transition-colors ${
-                  !success
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted-foreground hover:border-foreground/30"
-                }`}
-              >
-                ✗ Невдалий
-              </button>
-            </div>
+        {/* Result toggle */}
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs">Результат</Label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setSuccess(true)}
+              className={`flex-1 rounded-xl border py-2 text-xs transition-colors ${
+                success
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:border-border/60"
+              }`}
+            >
+              ✓ Успішний
+            </button>
+            <button
+              type="button"
+              onClick={() => setSuccess(false)}
+              className={`flex-1 rounded-xl border py-2 text-xs transition-colors ${
+                !success
+                  ? "border-destructive bg-destructive/10 text-destructive"
+                  : "border-border text-muted-foreground hover:border-border/60"
+              }`}
+            >
+              ✗ Невдалий
+            </button>
           </div>
         </div>
 
@@ -146,7 +141,7 @@ function NewCaseForm() {
           <Input
             value={taskName}
             onChange={(e) => setTaskName(e.target.value)}
-            placeholder="Анімація продукту для Instagram Stories"
+            placeholder="Назва задачі"
             className="text-sm"
           />
         </div>
@@ -157,13 +152,13 @@ function NewCaseForm() {
             value={approach}
             onChange={(e) => setApproach(e.target.value)}
             placeholder="Які промпти використовували, які налаштування..."
-            rows={4}
-            className="resize-none text-sm"
+            rows={5}
+            className="resize-none font-mono text-xs"
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Деталі задачі (опціонально)</Label>
+          <Label className="text-xs">Деталі задачі</Label>
           <Textarea
             value={taskDetails}
             onChange={(e) => setTaskDetails(e.target.value)}
@@ -210,7 +205,7 @@ function NewCaseForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Результат / нотатки (опціонально)</Label>
+          <Label className="text-xs">Результат / нотатки</Label>
           <Textarea
             value={outcome}
             onChange={(e) => setOutcome(e.target.value)}
@@ -221,7 +216,7 @@ function NewCaseForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Фото результатів (опціонально)</Label>
+          <Label className="text-xs">Фото результатів</Label>
           <PhotoUploader
             photos={photos}
             onChange={setPhotos}
@@ -235,7 +230,7 @@ function NewCaseForm() {
         <div className="flex items-center justify-between pt-1">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => router.push(`/cases/${id}`)}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Скасувати
@@ -246,13 +241,5 @@ function NewCaseForm() {
         </div>
       </form>
     </div>
-  )
-}
-
-export default function NewCasePage() {
-  return (
-    <Suspense>
-      <NewCaseForm />
-    </Suspense>
   )
 }

@@ -12,6 +12,8 @@ export type Tool = {
   description: string | null
   monitor_url: string | null
   guide_markdown: string | null
+  manual_notes: string | null
+  links: { title: string; url: string; added_at: string }[]
   last_scraped_at: string | null
   created_at: string
 }
@@ -36,6 +38,7 @@ export type Case = {
   time_spent_min: number | null
   time_without_ai_min: number | null
   source: "web" | "extension"
+  photos: string[]
   created_at: string
   tool?: Tool
 }

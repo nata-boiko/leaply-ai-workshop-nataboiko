@@ -49,7 +49,7 @@ export function RefreshGuideButton({ slug }: Props) {
         variant="outline"
         onClick={handleRefresh}
         disabled={status === "loading"}
-        className="gap-1.5"
+        className="gap-1.5 rounded-lg border-border text-xs hover:border-primary/40 hover:text-primary"
       >
         <RiRefreshLine
           size={14}

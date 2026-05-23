@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { anthropic, MODEL } from "@/lib/anthropic"
+import { getAnthropic, MODEL } from "@/lib/anthropic"
 import { supabase } from "@/lib/supabase"
 import { getTeamContext } from "@/lib/team-context"
 import type { Tool, Case } from "@/lib/supabase"
@@ -59,7 +59,7 @@ ${casesSummary || "Поки немає кейсів."}
 - Будь стислим і практичним
 - Якщо є схожий кейс, поверни його назву і підхід у полі similar_case у JSON`
 
-    const message = await anthropic.messages.create({
+    const message = await getAnthropic().messages.create({
       model: MODEL,
       max_tokens: 1024,
       system: systemPrompt,
