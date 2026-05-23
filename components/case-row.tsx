@@ -10,7 +10,7 @@ type Props = {
 export function CaseRow({ case_, showTool = false }: Props) {
   return (
     <Link href={`/cases/${case_.id}`}>
-      <div className="group rounded-xl border border-border bg-card p-4 transition-all duration-150 hover:border-primary/30 hover:bg-card/80">
+      <div className="group rounded-2xl border border-border bg-card p-4 transition-all duration-150 hover:-translate-y-px hover:border-primary/20 hover:shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">

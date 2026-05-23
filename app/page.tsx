@@ -53,16 +53,22 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-2xl">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">AI Tools KB</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            База знань інструментів дизайн-команди
+          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            Дизайн-команда
           </p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">
+            AI Tools KB
+          </h1>
         </div>
         <div className="flex items-center gap-2">
           <AddUpdateModal tools={rawTools} />
-          <Button asChild size="sm" className="rounded-lg text-xs">
+          <Button
+            asChild
+            size="sm"
+            className="rounded-xl px-4 text-xs font-medium"
+          >
             <Link href="/cases/new">+ Кейс</Link>
           </Button>
         </div>
@@ -71,9 +77,9 @@ export default async function DashboardPage() {
       <UpdateBanner updates={updates} />
 
       {/* Tools */}
-      <div className="mb-10 grid grid-cols-2 gap-3">
-        {tools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} />
+      <div className="mb-10 grid grid-cols-2 gap-4">
+        {tools.map((tool, i) => (
+          <ToolCard key={tool.id} tool={tool} colorIndex={i} />
         ))}
       </div>
 
