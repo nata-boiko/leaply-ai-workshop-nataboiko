@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -25,14 +26,15 @@ export function RenewalForm({ subs, preselectedId }: Props) {
   const [renewedAt, setRenewedAt] = useState(
     new Date().toISOString().slice(0, 10)
   )
-  const [planName, setPlanName] = useState("")
-  const [status, setStatus] = useState<"active" | "new" | "canceled">("active")
-  const [amount, setAmount] = useState("")
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
-    "monthly"
+  const [type, setType] = useState<"subscription" | "extra_credits">(
+    "subscription"
   )
+  const [planName, setPlanName] = useState("")
+  const [status, setStatus] = useState<"active" | "canceled">("active")
+  const [amount, setAmount] = useState("")
   const [currency, setCurrency] = useState("USD")
   const [creditsIncluded, setCreditsIncluded] = useState("")
+  const [notes, setNotes] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -56,12 +58,13 @@ export function RenewalForm({ subs, preselectedId }: Props) {
         body: JSON.stringify({
           subscription_id: subId,
           renewed_at: renewedAt,
+          type,
           plan_name: planName || null,
           status,
           cost_per_cycle: Number(amount),
-          billing_cycle: billingCycle,
           currency,
           credits_included: creditsIncluded ? Number(creditsIncluded) : null,
+          notes: notes || null,
         }),
       })
       if (!res.ok) {
@@ -79,6 +82,19 @@ export function RenewalForm({ subs, preselectedId }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex max-w-lg flex-col gap-5">
+      <div className="flex flex-col gap-1.5">
+        <Label className="text-xs">Тип запису</Label>
+        <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
+          <SelectTrigger className="text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="subscription">Підписка</SelectItem>
+            <SelectItem value="extra_credits">Додаткові креди</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs">Сервіс</Label>
@@ -118,7 +134,6 @@ export function RenewalForm({ subs, preselectedId }: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="new">New</SelectItem>
               <SelectItem value="canceled">Canceled</SelectItem>
             </SelectContent>
           </Select>
@@ -128,13 +143,13 @@ export function RenewalForm({ subs, preselectedId }: Props) {
           <Input
             value={planName}
             onChange={(e) => setPlanName(e.target.value)}
-            placeholder="Pro"
+            placeholder="Team Unlimited"
             className="text-sm"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <Label className="text-xs">Сума списання</Label>
           <Input
@@ -156,25 +171,10 @@ export function RenewalForm({ subs, preselectedId }: Props) {
             className="text-sm"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Цикл</Label>
-          <Select
-            value={billingCycle}
-            onValueChange={(v) => setBillingCycle(v as typeof billingCycle)}
-          >
-            <SelectTrigger className="text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="monthly">Місячний</SelectItem>
-              <SelectItem value="annual">Річний</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label className="text-xs">Кредів у новому плані (опційно)</Label>
+        <Label className="text-xs">Кредів у плані (опційно)</Label>
         <Input
           type="number"
           min="0"
@@ -182,6 +182,17 @@ export function RenewalForm({ subs, preselectedId }: Props) {
           onChange={(e) => setCreditsIncluded(e.target.value)}
           placeholder="2000"
           className="text-sm"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label className="text-xs">Коментар (опційно)</Label>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Наприклад: знижка 20%, змінили тариф..."
+          rows={2}
+          className="resize-none text-sm"
         />
       </div>
 

@@ -27,13 +27,11 @@ const STATUS_VARIANT: Record<
   "default" | "secondary" | "outline"
 > = {
   active: "default",
-  new: "secondary",
   canceled: "outline",
 }
 
 const STATUS_LABEL: Record<Subscription["status"], string> = {
   active: "Active",
-  new: "New",
   canceled: "Canceled",
 }
 

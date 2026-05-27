@@ -135,7 +135,6 @@ export function SubscriptionForm({ initial, tools }: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="new">New</SelectItem>
               <SelectItem value="canceled">Canceled</SelectItem>
             </SelectContent>
           </Select>
