@@ -48,3 +48,34 @@ export type TeamContext = {
   content: string
   updated_at: string
 }
+
+export type Subscription = {
+  id: string
+  tool_id: string | null
+  name: string
+  plan_name: string | null
+  status: "active" | "new" | "canceled"
+  currency: string
+  cost_per_cycle: number
+  billing_cycle: "monthly" | "annual"
+  renewal_date: string | null
+  credits_included: number | null
+  credits_unit: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+  tool?: Tool | null
+  usage_logs?: UsageLog[]
+}
+
+export type UsageLog = {
+  id: string
+  subscription_id: string
+  period_month: string
+  credits_used: number
+  credits_remaining: number | null
+  creo_count: number
+  extra_credits_cost: number
+  extra_credits_source: string | null
+  recorded_at: string
+}

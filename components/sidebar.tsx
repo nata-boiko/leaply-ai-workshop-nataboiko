@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import {
   RiBookOpenLine,
   RiFileList3Line,
+  RiWalletLine,
   RiSettings3Line,
 } from "@remixicon/react"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -13,6 +14,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 const nav = [
   { href: "/", label: "Tools", icon: RiBookOpenLine },
   { href: "/cases", label: "Cases", icon: RiFileList3Line },
+  { href: "/budget", label: "Budget", icon: RiWalletLine },
   { href: "/settings", label: "Settings", icon: RiSettings3Line },
 ]
 
