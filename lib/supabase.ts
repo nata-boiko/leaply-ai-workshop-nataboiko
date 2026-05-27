@@ -54,7 +54,7 @@ export type Subscription = {
   tool_id: string | null
   name: string
   plan_name: string | null
-  status: "active" | "new" | "canceled"
+  status: "active" | "canceled"
   currency: string
   cost_per_cycle: number
   billing_cycle: "monthly" | "annual"
@@ -73,8 +73,9 @@ export type RenewalLog = {
   id: string
   subscription_id: string
   renewed_at: string
+  type: "subscription" | "extra_credits"
   plan_name: string | null
-  status: "active" | "new" | "canceled"
+  status: "active" | "canceled"
   cost_per_cycle: number
   billing_cycle: "monthly" | "annual"
   currency: string
@@ -83,10 +84,22 @@ export type RenewalLog = {
   created_at: string
 }
 
+export type CreditDeduction = {
+  id: string
+  subscription_id: string
+  charged_at: string
+  credits_amount: number
+  notes: string | null
+  source: "manual" | "checkup"
+  usage_log_id: string | null
+  created_at: string
+}
+
 export type UsageLog = {
   id: string
   subscription_id: string
   period_month: string
+  checkup_date: string | null
   credits_used: number
   credits_remaining: number | null
   creo_count: number

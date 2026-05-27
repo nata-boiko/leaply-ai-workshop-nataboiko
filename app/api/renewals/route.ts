@@ -9,39 +9,30 @@ export async function POST(req: NextRequest) {
   try {
     const body = RenewalSchema.parse(await req.json())
 
+    // Fetch subscription to get billing_cycle for the log record
+    const { data: sub, error: subError } = await supabase
+      .from("subscriptions")
+      .select("billing_cycle")
+      .eq("id", body.subscription_id)
+      .single()
+
+    if (subError || !sub)
+      return NextResponse.json(
+        { error: "Підписку не знайдено" },
+        { status: 404 }
+      )
+
+    const billingCycle = sub.billing_cycle as "monthly" | "annual"
+
     // Insert renewal log entry
     const { data, error } = await supabase
       .from("renewal_logs")
-      .insert(body)
+      .insert({ ...body, billing_cycle: billingCycle })
       .select()
       .single()
 
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 })
-
-    // Compute next renewal date (charge date + 1 month or + 1 year)
-    const d = new Date(`${body.renewed_at}T00:00:00Z`)
-    if (body.billing_cycle === "annual") {
-      d.setUTCFullYear(d.getUTCFullYear() + 1)
-    } else {
-      d.setUTCMonth(d.getUTCMonth() + 1)
-    }
-    const nextRenewalDate = d.toISOString().slice(0, 10)
-
-    // Keep subscription's current values in sync with latest renewal
-    await supabase
-      .from("subscriptions")
-      .update({
-        plan_name: body.plan_name,
-        status: body.status,
-        cost_per_cycle: body.cost_per_cycle,
-        billing_cycle: body.billing_cycle,
-        currency: body.currency,
-        credits_included: body.credits_included ?? null,
-        renewal_date: nextRenewalDate,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", body.subscription_id)
 
     return NextResponse.json(data, { status: 201 })
   } catch (err) {

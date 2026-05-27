@@ -3,6 +3,7 @@ import { z } from "zod"
 export const UsageSchema = z.object({
   subscription_id: z.string().uuid(),
   period_month: z.string().min(1, "Оберіть місяць"),
+  checkup_date: z.string().optional().nullable(),
   credits_used: z.coerce.number().min(0).default(0),
   credits_remaining: z.coerce.number().min(0).optional().nullable(),
   creo_count: z.coerce.number().int().min(0).default(0),

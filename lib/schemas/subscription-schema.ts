@@ -4,7 +4,7 @@ export const SubscriptionSchema = z.object({
   tool_id: z.string().uuid().optional().nullable(),
   name: z.string().min(1, "Назва обов'язкова"),
   plan_name: z.string().optional().nullable(),
-  status: z.enum(["active", "new", "canceled"]).default("active"),
+  status: z.enum(["active", "canceled"]).default("active"),
   currency: z.string().min(1).default("USD"),
   cost_per_cycle: z.coerce.number().min(0).default(0),
   billing_cycle: z.enum(["monthly", "annual"]).default("monthly"),
