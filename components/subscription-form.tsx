@@ -32,6 +32,7 @@ export function SubscriptionForm({ initial, tools }: Props) {
     renewal_date: initial?.renewal_date ?? "",
     credits_included: initial?.credits_included?.toString() ?? "",
     credits_unit: initial?.credits_unit ?? "",
+    url: initial?.url ?? "",
     notes: initial?.notes ?? "",
   })
   const [loading, setLoading] = useState(false)
@@ -62,6 +63,7 @@ export function SubscriptionForm({ initial, tools }: Props) {
           ? Number(form.credits_included)
           : null,
         credits_unit: form.credits_unit || null,
+        url: form.url || null,
         notes: form.notes || null,
       }
       const url = initial
@@ -209,6 +211,17 @@ export function SubscriptionForm({ initial, tools }: Props) {
             className="text-sm"
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label className="text-xs">Посилання на сайт (опційно)</Label>
+        <Input
+          type="url"
+          value={form.url}
+          onChange={(e) => set("url")(e.target.value)}
+          placeholder="https://heygen.com"
+          className="text-sm"
+        />
       </div>
 
       <div className="flex flex-col gap-1.5">

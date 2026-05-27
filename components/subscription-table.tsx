@@ -11,6 +11,7 @@ import {
   creditsRunwayWorkingDays,
 } from "@/lib/metrics"
 import { formatMoney, formatDate, daysUntil } from "@/lib/format"
+import { TopUpDialog } from "@/components/topup-dialog"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -87,7 +88,12 @@ export function SubscriptionTable({ subs }: { subs: Subscription[] }) {
             return (
               <TableRow key={sub.id}>
                 <TableCell>
-                  <span className="font-medium">{sub.name}</span>
+                  <Link
+                    href={`/budget/subscriptions/${sub.id}`}
+                    className="font-medium hover:underline"
+                  >
+                    {sub.name}
+                  </Link>
                   {sub.plan_name && (
                     <span className="block text-xs text-muted-foreground">
                       {sub.plan_name}
@@ -149,9 +155,13 @@ export function SubscriptionTable({ subs }: { subs: Subscription[] }) {
                   )}
                 </TableCell>
                 <TableCell className="text-right whitespace-nowrap">
+                  <TopUpDialog
+                    subscriptionId={sub.id}
+                    subscriptionName={sub.name}
+                  />
                   <Link
                     href={`/budget/subscriptions/${sub.id}/edit`}
-                    className="text-xs text-muted-foreground hover:text-foreground"
+                    className="ml-3 text-xs text-muted-foreground hover:text-foreground"
                   >
                     Ред.
                   </Link>

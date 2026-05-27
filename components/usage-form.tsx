@@ -24,8 +24,6 @@ export function UsageForm({ subs }: { subs: Subscription[] }) {
     credits_used: "",
     credits_remaining: "",
     creo_count: "",
-    extra_credits_cost: "",
-    extra_credits_source: "",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -53,10 +51,6 @@ export function UsageForm({ subs }: { subs: Subscription[] }) {
             ? Number(form.credits_remaining)
             : null,
           creo_count: form.creo_count ? Number(form.creo_count) : 0,
-          extra_credits_cost: form.extra_credits_cost
-            ? Number(form.extra_credits_cost)
-            : 0,
-          extra_credits_source: form.extra_credits_source || null,
         }),
       })
       if (!res.ok) {
@@ -128,7 +122,7 @@ export function UsageForm({ subs }: { subs: Subscription[] }) {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Креативів (крео)</Label>
+          <Label className="text-xs">Крео</Label>
           <Input
             type="number"
             min="0"
@@ -140,29 +134,10 @@ export function UsageForm({ subs }: { subs: Subscription[] }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Докуплені креди ($)</Label>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.extra_credits_cost}
-            onChange={(e) => set("extra_credits_cost")(e.target.value)}
-            placeholder="0"
-            className="text-sm"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-xs">Де докуповували</Label>
-          <Input
-            value={form.extra_credits_source}
-            onChange={(e) => set("extra_credits_source")(e.target.value)}
-            placeholder="сайт сервісу / реселер"
-            className="text-sm"
-          />
-        </div>
-      </div>
+      <p className="text-xs text-muted-foreground">
+        Заповніть те, що знаєте — всі поля опційні. Повторне збереження того ж
+        місяця оновлює дані.
+      </p>
 
       {error && <p className="text-xs text-destructive">{error}</p>}
 

@@ -61,11 +61,26 @@ export type Subscription = {
   renewal_date: string | null
   credits_included: number | null
   credits_unit: string | null
+  url: string | null
   notes: string | null
   created_at: string
   updated_at: string
   tool?: Tool | null
   usage_logs?: UsageLog[]
+}
+
+export type RenewalLog = {
+  id: string
+  subscription_id: string
+  renewed_at: string
+  plan_name: string | null
+  status: "active" | "new" | "canceled"
+  cost_per_cycle: number
+  billing_cycle: "monthly" | "annual"
+  currency: string
+  credits_included: number | null
+  notes: string | null
+  created_at: string
 }
 
 export type UsageLog = {

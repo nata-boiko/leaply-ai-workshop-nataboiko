@@ -11,6 +11,12 @@ export const SubscriptionSchema = z.object({
   renewal_date: z.string().optional().nullable(),
   credits_included: z.coerce.number().min(0).optional().nullable(),
   credits_unit: z.string().optional().nullable(),
+  url: z
+    .string()
+    .url("Некоректне посилання")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
   notes: z.string().optional().nullable(),
 })
 

@@ -1,11 +1,12 @@
 import { Suspense } from "react"
-import { UsageForm } from "@/components/usage-form"
+import { RenewalForm } from "@/components/renewal-form"
+
 import { supabase } from "@/lib/supabase"
 import type { Subscription } from "@/lib/supabase"
 
 export const dynamic = "force-dynamic"
 
-export default async function NewUsagePage() {
+export default async function NewRenewalPage() {
   const { data } = await supabase
     .from("subscriptions")
     .select("*")
@@ -15,13 +16,13 @@ export default async function NewUsagePage() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="mb-1 text-base font-semibold">Чек-ап кредів</h1>
+      <h1 className="mb-1 text-base font-semibold">Оновлення підписки</h1>
       <p className="mb-6 text-xs text-muted-foreground">
-        Зафіксуйте поточний стан кредів. Заповніть те, що знаєте — всі поля
-        опційні. Повторне збереження того ж місяця оновлює дані.
+        Зафіксуйте факт списання — оновить дату поновлення і суму для цього
+        сервісу.
       </p>
       <Suspense>
-        <UsageForm subs={subs} />
+        <RenewalForm subs={subs} />
       </Suspense>
     </div>
   )

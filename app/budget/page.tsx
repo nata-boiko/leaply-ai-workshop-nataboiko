@@ -39,7 +39,15 @@ export default async function BudgetPage() {
             size="sm"
             className="rounded-xl px-4 text-xs font-medium"
           >
-            <Link href="/budget/usage/new">Внести місяць</Link>
+            <Link href="/budget/usage/new">Чек-ап кредів</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl px-4 text-xs font-medium"
+          >
+            <Link href="/budget/renewal/new">Оновлення підписки</Link>
           </Button>
           <Button
             asChild
